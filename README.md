@@ -2,6 +2,10 @@
 
 # JEI Recipe Bridge #
 
+# forked to try 26.1.1  #
+download beta here - https://github.com/aaronfpp/JEIRecipeBridge/releases
+use at your own risk
+
 ## About ##
 This plugin sends server recipes to connecting clients in a format expected by Fabric / NeoForge clients, allowing JEI to display them.
 
