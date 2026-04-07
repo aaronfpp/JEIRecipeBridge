@@ -1,0 +1,8 @@
+name: JEIRecipeBridge
+version: '1.0.1'
+main: com.mrbysco.jeicompat.JEIRecipeBridgePlugin
+api-version: '26.1.1'
+author: "Mrbysco"
+description: "Synchronizes server recipes to the client, enabling JEI support."
+website: "https://www.curseforge.com/minecraft/bukkit-plugins/jei-recipe-bridge"
+folia-supported: true
