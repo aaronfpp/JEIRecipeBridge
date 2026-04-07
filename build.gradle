@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
     id("xyz.jpenilla.run-paper") version "3.0.2"
 }
 
@@ -9,25 +9,25 @@ version = plugin_version
 base {
     archivesName = "${mod_name}"
 }
-description = "TODO: Fill in"
+description = "JEI Recipe Bridge for Minecraft 26.1.1"
 
 java {
-    // Configure the java toolchain. This allows gradle to auto-provision JDK 21 on systems that only have JDK 11 installed for example.
-    toolchain.languageVersion = JavaLanguageVersion.of(21)
+    // Paper 26.1.1 requires Java 25
+    toolchain.languageVersion = JavaLanguageVersion.of(25)
 }
 
 dependencies {
-    compileOnly "io.papermc.paper:paper-api:${paper_version}"
-    paperweight.paperDevBundle("${paperweight_version}")
+    compileOnly "io.papermc.paper:paper-api:26.1.1.build.+"
+    paperweight.paperDevBundle("26.1.1.build.+")
 }
 
 tasks {
     compileJava {
-        options.release = 21
+        options.release = 25
     }
     runServer {
         minecraftVersion("${mc_version}")
-        jvmArgs("-Xms2G", "-Xmx2G")
+        jvmArgs("-Xms2G", "-Xmx4G")
     }
 }
 
