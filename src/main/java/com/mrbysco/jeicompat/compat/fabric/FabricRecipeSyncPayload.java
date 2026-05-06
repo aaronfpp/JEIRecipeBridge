@@ -12,20 +12,17 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public record FabricRecipeSyncPayload(List<Entry> entries) implements CustomPacketPayload {
 	public static final StreamCodec<RegistryFriendlyByteBuf, FabricRecipeSyncPayload> CODEC = Entry.CODEC.apply(ByteBufCodecs.list())
 			.map(FabricRecipeSyncPayload::new, FabricRecipeSyncPayload::entries);
 
 	public static final Type<FabricRecipeSyncPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath("fabric", "recipe_sync"));
-
-	@Override
-	public Type<? extends CustomPacketPayload> type() {
-		return TYPE;
-	}
 
 	public record Entry(RecipeSerializer<?> serializer, List<RecipeHolder<?>> recipes) {
 		public static final StreamCodec<RegistryFriendlyByteBuf, Entry> CODEC = StreamCodec.ofMember(
@@ -55,7 +52,7 @@ public record FabricRecipeSyncPayload(List<Entry> entries) implements CustomPack
 		}
 
 		private void write(RegistryFriendlyByteBuf buf) {
-			buf.writeIdentifier(BuiltInRegistries.RECIPE_SERIALIZER.getKey(this.serializer));
+			buf.writeIdentifier(Objects.requireNonNull(BuiltInRegistries.RECIPE_SERIALIZER.getKey(this.serializer)));
 
 			buf.writeVarInt(this.recipes.size());
 
@@ -67,5 +64,11 @@ public record FabricRecipeSyncPayload(List<Entry> entries) implements CustomPack
 				serializer.encode(buf, recipe.value());
 			}
 		}
+	}
+
+	@NonNull
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
 	}
 }
