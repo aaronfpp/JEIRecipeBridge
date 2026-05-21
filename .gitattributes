@@ -1,2 +1,13 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Gradle wrapper scripts (Unix/Linux)
+gradlew text eol=lf
+*.sh text eol=lf
+
+# Gradle wrapper scripts (Windows)
+gradlew.bat text eol=crlf
+*.bat text eol=crlf
+
+# Gradle wrapper jar
+gradle/wrapper/gradle-wrapper.jar binary
