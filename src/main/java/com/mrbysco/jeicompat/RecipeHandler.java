@@ -87,7 +87,7 @@ public class RecipeHandler implements Listener, PluginMessageListener {
 			}
 		}
 
-		var payload = new FabricRecipeSyncPayload(list);
+		var payload = new FabricRecipeSyncPayload(true, list);
 		FabricRecipeSyncPayload.CODEC.encode(buffer, payload);
 
 		byte[] bytes = new byte[buffer.writerIndex()];

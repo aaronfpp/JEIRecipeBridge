@@ -18,9 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public record FabricRecipeSyncPayload(List<Entry> entries) implements CustomPacketPayload {
-	public static final StreamCodec<RegistryFriendlyByteBuf, FabricRecipeSyncPayload> CODEC = Entry.CODEC.apply(ByteBufCodecs.list())
-			.map(FabricRecipeSyncPayload::new, FabricRecipeSyncPayload::entries);
+public record FabricRecipeSyncPayload(boolean pluginCapabilities, List<Entry> entries) implements CustomPacketPayload {
+	public static final StreamCodec<RegistryFriendlyByteBuf, FabricRecipeSyncPayload> CODEC = StreamCodec.ofMember(
+			FabricRecipeSyncPayload::write,
+			FabricRecipeSyncPayload::read
+		);
 
 	public static final Type<FabricRecipeSyncPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath("fabric", "recipe_sync"));
 
@@ -64,6 +66,17 @@ public record FabricRecipeSyncPayload(List<Entry> entries) implements CustomPack
 				serializer.encode(buf, recipe.value());
 			}
 		}
+	}
+
+	private static FabricRecipeSyncPayload read(RegistryFriendlyByteBuf buf) {
+		boolean pluginCapabilities = buf.readBoolean();
+		var entries = Entry.CODEC.apply(ByteBufCodecs.list()).decode(buf);
+		return new FabricRecipeSyncPayload(pluginCapabilities, entries);
+	}
+
+	private void write(RegistryFriendlyByteBuf buf) {
+		buf.writeBoolean(this.pluginCapabilities);
+		Entry.CODEC.apply(ByteBufCodecs.list()).encode(buf, this.entries);
 	}
 
 	@NonNull

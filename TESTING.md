@@ -11,6 +11,16 @@ This document outlines how to test the recipe fill (auto-fill) feature for the J
 
 ## Test Scenarios
 
+### 0. Recipe Sync Handshake
+**Objective**: Verify the server advertises recipe fill capability during recipe sync.
+
+**Steps**:
+1. Connect to server with Fabric/NeoForge + JEI
+2. Confirm the client receives the recipe sync payload
+3. Verify the client sees the [+] button enabled for supported recipes
+
+**Expected Result**: Server sends recipe sync payload with `pluginCapabilities = true`, and JEI shows the fill button active.
+
 ### 1. Basic Crafting Table Fill
 **Objective**: Verify recipe filling works for basic crafting table recipes
 

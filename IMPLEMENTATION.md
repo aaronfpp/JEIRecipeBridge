@@ -14,6 +14,11 @@
 - `NeoforgeRecipeFillRequestPayload` - NeoForge-compatible request
 - Contains: recipe ID, variant ID, quantity
 
+**Sync Payload Handshake**:
+- `FabricRecipeSyncPayload` and `NeoforgeRecipeSyncPayload` now include a `pluginCapabilities: boolean` field
+- This flag signals the client that the server supports recipe fill
+- The client uses this handshake to enable or grey out the `[+]` fill button
+
 **Response Payloads**:
 - `FabricRecipeFillResponsePayload` - Detailed feedback to Fabric clients
 - `NeoforgeRecipeFillResponsePayload` - Detailed feedback to NeoForge clients
