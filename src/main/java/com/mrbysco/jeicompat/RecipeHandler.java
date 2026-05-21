@@ -101,7 +101,44 @@ public class RecipeHandler implements Listener, PluginMessageListener {
 
 	@Override
 	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-		// Recipe fill request handling will be implemented here
-		JEIRecipeBridgePlugin.LOGGER.debug("Received plugin message on channel: " + channel);
+		if (channel.equals("fabric:recipe_fill_request")) {
+			handleFabricRecipeFillRequest(player, message);
+		} else if (channel.equals("neoforge:recipe_fill_request")) {
+			handleNeoforgeRecipeFillRequest(player, message);
+		}
+	}
+
+	private void handleFabricRecipeFillRequest(Player player, byte[] message) {
+		try {
+			RegistryFriendlyByteBuf buffer = new RegistryFriendlyByteBuf(
+				io.netty.buffer.Unpooled.wrappedBuffer(message),
+				((CraftPlayer) player).getHandle().level().getServer().registryAccess()
+			);
+
+			com.mrbysco.jeicompat.compat.fabric.FabricRecipeFillRequestPayload payload =
+				com.mrbysco.jeicompat.compat.fabric.FabricRecipeFillRequestPayload.CODEC.decode(buffer);
+
+			// TODO: Forward to RecipeFillHandler
+			JEIRecipeBridgePlugin.LOGGER.debug("Received Fabric recipe fill request for: " + payload.recipeId());
+		} catch (Exception e) {
+			JEIRecipeBridgePlugin.LOGGER.error("Error handling Fabric recipe fill request", e);
+		}
+	}
+
+	private void handleNeoforgeRecipeFillRequest(Player player, byte[] message) {
+		try {
+			RegistryFriendlyByteBuf buffer = new RegistryFriendlyByteBuf(
+				io.netty.buffer.Unpooled.wrappedBuffer(message),
+				((CraftPlayer) player).getHandle().level().getServer().registryAccess()
+			);
+
+			com.mrbysco.jeicompat.compat.neoforge.NeoforgeRecipeFillRequestPayload payload =
+				com.mrbysco.jeicompat.compat.neoforge.NeoforgeRecipeFillRequestPayload.STREAM_CODEC.decode(buffer);
+
+			// TODO: Forward to RecipeFillHandler
+			JEIRecipeBridgePlugin.LOGGER.debug("Received NeoForge recipe fill request for: " + payload.recipeId());
+		} catch (Exception e) {
+			JEIRecipeBridgePlugin.LOGGER.error("Error handling NeoForge recipe fill request", e);
+		}
 	}
 }
