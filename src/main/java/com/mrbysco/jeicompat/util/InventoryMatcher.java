@@ -7,6 +7,7 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.Inventory;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,10 +28,46 @@ public class InventoryMatcher {
 	}
 
 	public static MatchResult matchIngredientsToInventory(Recipe<?> recipe, HumanEntity player, List<Integer> inputSlots) {
-		// Placeholder - will be expanded to handle specific recipe types
 		Map<Integer, ItemStack> slotMatches = new HashMap<>();
 		List<String> missingItems = new ArrayList<>();
-		return new MatchResult(false, slotMatches, missingItems);
+
+		List<Ingredient> ingredients = extractIngredients(recipe);
+		if (ingredients == null || ingredients.isEmpty()) {
+			return new MatchResult(false, slotMatches, missingItems);
+		}
+
+		List<ItemStack> availableItems = getAvailableInventoryItems(player.getInventory());
+
+		for (int i = 0; i < Math.min(inputSlots.size(), ingredients.size()); i++) {
+			int containerSlot = inputSlots.get(i);
+			Ingredient ingredient = ingredients.get(i);
+
+			ItemStack matched = findMatchingItem(ingredient, availableItems);
+			if (matched.isEmpty()) {
+				missingItems.add(getIngredientName(ingredient));
+			} else {
+				ItemStack toPlace = matched.copy();
+				toPlace.setCount(1);
+				slotMatches.put(containerSlot, toPlace);
+				matched.shrink(1);
+			}
+		}
+
+		boolean canFillCompletely = missingItems.isEmpty();
+		return new MatchResult(canFillCompletely, slotMatches, missingItems);
+	}
+
+	private static List<Ingredient> extractIngredients(Recipe<?> recipe) {
+		try {
+			Method getIngredientsMethod = recipe.getClass().getMethod("getIngredients");
+			Object result = getIngredientsMethod.invoke(recipe);
+			if (result instanceof List) {
+				return (List<Ingredient>) result;
+			}
+		} catch (Exception e) {
+			// Fallback: recipe type doesn't have getIngredients()
+		}
+		return new ArrayList<>();
 	}
 
 	private static List<ItemStack> getAvailableInventoryItems(Inventory inventory) {
@@ -52,15 +89,17 @@ public class InventoryMatcher {
 		return !stack.hasItemMeta();
 	}
 
-	private static ItemStack findMatchingItem(Ingredient ingredient, List<ItemStack> availableItems, Map<ItemStack, Integer> usedCounts) {
+	private static ItemStack findMatchingItem(Ingredient ingredient, List<ItemStack> availableItems) {
 		for (ItemStack item : availableItems) {
-			if (ingredient.test(item)) {
-				int alreadyUsed = usedCounts.getOrDefault(item, 0);
-				if (alreadyUsed < item.getMaxStackSize()) {
-					return item;
-				}
+			if (!item.isEmpty() && ingredient.test(item)) {
+				return item;
 			}
 		}
 		return ItemStack.EMPTY;
+	}
+
+	private static String getIngredientName(Ingredient ingredient) {
+		if (ingredient == null) return "Unknown";
+		return ingredient.toString();
 	}
 }

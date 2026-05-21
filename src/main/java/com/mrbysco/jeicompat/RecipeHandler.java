@@ -2,6 +2,7 @@ package com.mrbysco.jeicompat;
 
 import com.mrbysco.jeicompat.compat.fabric.FabricRecipeSyncPayload;
 import com.mrbysco.jeicompat.compat.neoforge.NeoforgeRecipeSyncPayload;
+import com.mrbysco.jeicompat.handler.RecipeFillHandler;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -118,8 +119,7 @@ public class RecipeHandler implements Listener, PluginMessageListener {
 			com.mrbysco.jeicompat.compat.fabric.FabricRecipeFillRequestPayload payload =
 				com.mrbysco.jeicompat.compat.fabric.FabricRecipeFillRequestPayload.CODEC.decode(buffer);
 
-			// TODO: Forward to RecipeFillHandler
-			JEIRecipeBridgePlugin.LOGGER.debug("Received Fabric recipe fill request for: " + payload.recipeId());
+			RecipeFillHandler.handleRecipeFillRequest(player, payload.recipeId(), payload.variantId(), "fabric");
 		} catch (Exception e) {
 			JEIRecipeBridgePlugin.LOGGER.error("Error handling Fabric recipe fill request", e);
 		}
@@ -135,8 +135,7 @@ public class RecipeHandler implements Listener, PluginMessageListener {
 			com.mrbysco.jeicompat.compat.neoforge.NeoforgeRecipeFillRequestPayload payload =
 				com.mrbysco.jeicompat.compat.neoforge.NeoforgeRecipeFillRequestPayload.STREAM_CODEC.decode(buffer);
 
-			// TODO: Forward to RecipeFillHandler
-			JEIRecipeBridgePlugin.LOGGER.debug("Received NeoForge recipe fill request for: " + payload.recipeId());
+			RecipeFillHandler.handleRecipeFillRequest(player, payload.recipeId(), payload.variantId(), "neoforge");
 		} catch (Exception e) {
 			JEIRecipeBridgePlugin.LOGGER.error("Error handling NeoForge recipe fill request", e);
 		}
