@@ -14,9 +14,19 @@ out
 .idea
 
 # gradle
-build
+build/
 .gradle
 
 # other
 eclipse
 run
+
+# logs
+*.log
+
+# macOS
+.DS_Store
+
+# vim swap files
+*.swp
+*.swo
