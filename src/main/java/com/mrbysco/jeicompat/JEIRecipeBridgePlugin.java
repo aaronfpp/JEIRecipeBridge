@@ -22,6 +22,9 @@ public final class JEIRecipeBridgePlugin extends JavaPlugin {
 		// Register plugin channels for outgoing messages with the ids used by NeoForge and Fabric
 		messenger.registerOutgoingPluginChannel(this, "neoforge:recipe_content");
 		messenger.registerOutgoingPluginChannel(this, "fabric:recipe_sync");
+		// Register incoming channels for recipe fill requests
+		messenger.registerIncomingPluginChannel(this, "neoforge:recipe_fill_request", new RecipeHandler());
+		messenger.registerIncomingPluginChannel(this, "fabric:recipe_fill_request", new RecipeHandler());
 	}
 
 	@Override

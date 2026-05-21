@@ -22,12 +22,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class RecipeHandler implements Listener {
+public class RecipeHandler implements Listener, PluginMessageListener {
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
@@ -96,5 +97,11 @@ public class RecipeHandler implements Listener {
 
 	private static void sendPayload(ServerPlayer player, Identifier id, byte[] bytes) {
 		player.connection.send(new ClientboundCustomPayloadPacket(new DiscardedPayload(id, bytes)));
+	}
+
+	@Override
+	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+		// Recipe fill request handling will be implemented here
+		JEIRecipeBridgePlugin.LOGGER.debug("Received plugin message on channel: " + channel);
 	}
 }
