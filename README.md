@@ -6,7 +6,7 @@
 ## About ##
 This plugin sends server recipes to connecting clients in a format expected by Fabric / NeoForge clients, allowing JEI to display them.
 
-**Minecraft Version:** 1.26.1.2+
+**Minecraft Version:** 1.26.2+
 
 Since Minecraft 1.21.2+, recipes are stored on the server only, which prevents JEI from showing recipes when playing on vanilla-based servers. This plugin bridges that gap for Paper servers.
 
