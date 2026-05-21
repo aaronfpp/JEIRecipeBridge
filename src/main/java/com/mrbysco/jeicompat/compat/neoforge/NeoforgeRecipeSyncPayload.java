@@ -17,14 +17,14 @@ import java.util.List;
 import java.util.Set;
 
 public record NeoforgeRecipeSyncPayload(
-		boolean pluginCapabilities,
 		Set<RecipeType<?>> recipeTypes,
-		List<RecipeHolder<?>> recipes) implements CustomPacketPayload {
+		List<RecipeHolder<?>> recipes,
+		boolean pluginCapabilities) implements CustomPacketPayload {
 	public static final Type<NeoforgeRecipeSyncPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath("neoforge", "recipe_content"));
 
-	private static final StreamCodec<RegistryFriendlyByteBuf, Set<RecipeType<?>>> RECIPE_TYPE_CODEC =
+	public static final StreamCodec<RegistryFriendlyByteBuf, Set<RecipeType<?>>> RECIPE_TYPE_CODEC =
 			ByteBufCodecs.registry(Registries.RECIPE_TYPE).apply(ByteBufCodecs.collection(HashSet::new));
-	private static final StreamCodec<RegistryFriendlyByteBuf, List<RecipeHolder<?>>> RECIPES_CODEC =
+	public static final StreamCodec<RegistryFriendlyByteBuf, List<RecipeHolder<?>>> RECIPES_CODEC =
 			RecipeHolder.STREAM_CODEC.apply(ByteBufCodecs.list());
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, NeoforgeRecipeSyncPayload> STREAM_CODEC = StreamCodec.ofMember(
@@ -36,24 +36,24 @@ public record NeoforgeRecipeSyncPayload(
 		var recipeTypeSet = Set.copyOf(recipeTypes);
 		// Fast-path for empty recipe type set (if no mod wants to sync anything)
 		if (recipeTypeSet.isEmpty()) {
-			return new NeoforgeRecipeSyncPayload(true, recipeTypeSet, List.of());
+			return new NeoforgeRecipeSyncPayload(recipeTypeSet, List.of(), true);
 		} else {
 			var recipeSubset = recipes.values().stream().filter(h -> recipeTypeSet.contains(h.value().getType())).toList();
-			return new NeoforgeRecipeSyncPayload(true, recipeTypeSet, recipeSubset);
+			return new NeoforgeRecipeSyncPayload(recipeTypeSet, recipeSubset, true);
 		}
 	}
 
 	private static NeoforgeRecipeSyncPayload read(RegistryFriendlyByteBuf buf) {
-		boolean pluginCapabilities = buf.readBoolean();
 		var recipeTypes = RECIPE_TYPE_CODEC.decode(buf);
 		var recipes = RECIPES_CODEC.decode(buf);
-		return new NeoforgeRecipeSyncPayload(pluginCapabilities, recipeTypes, recipes);
+		boolean pluginCapabilities = buf.readBoolean();
+		return new NeoforgeRecipeSyncPayload(recipeTypes, recipes, pluginCapabilities);
 	}
 
 	private void write(RegistryFriendlyByteBuf buf) {
-		buf.writeBoolean(this.pluginCapabilities);
 		RECIPE_TYPE_CODEC.encode(buf, this.recipeTypes);
 		RECIPES_CODEC.encode(buf, this.recipes);
+		buf.writeBoolean(this.pluginCapabilities);
 	}
 
 	@NonNull

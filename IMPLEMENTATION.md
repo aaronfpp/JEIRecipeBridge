@@ -182,6 +182,8 @@ The **recipe-fill** branch contains a fully functional, buildable implementation
 - Clean architecture extensible for custom recipes/containers
 - Comprehensive testing documentation
 
+The **recipe-fill** branch contains the active development work-in-progress changes and ongoing integration updates.
+
 **Branch**: `recipe-fill`
 **Commits**: 3
 **Build Status**: ✅ PASSING
